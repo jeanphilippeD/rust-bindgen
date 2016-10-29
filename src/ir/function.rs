@@ -186,7 +186,8 @@ impl FunctionSig {
             }
         }
 
-        let ret = try!(Item::from_ty(&ty.ret_type(), None, None, ctx));
+        let ty_ret_type = ty.ret_type().expect("Expected a valid return type");
+        let ret = try!(Item::from_ty(&ty_ret_type, None, None, ctx));
         let abi = get_abi(ty.call_conv());
 
         Ok(Self::new(ret, args, ty.is_variadic(), abi))
