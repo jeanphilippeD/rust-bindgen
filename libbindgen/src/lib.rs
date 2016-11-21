@@ -4,6 +4,7 @@
 //! functions and use types defined in the header.
 //!
 //! See the [Builder](./struct.Builder.html) struct for usage.
+#![feature(conservative_impl_trait)]
 
 #![cfg_attr(feature = "clippy", feature(plugin))]
 #![cfg_attr(feature = "clippy", plugin(clippy))]

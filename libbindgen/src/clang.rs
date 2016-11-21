@@ -655,7 +655,7 @@ impl Type {
     /// template arguments. Otherwise, return None.
     pub fn template_args<'a>
         (&'a self)
-         -> Option<Box<ExactSizeIterator<Item = Type> + 'a>> {
+         -> Option<impl ExactSizeIterator<Item = Type> + 'a> {
         let f_len =
             move || unsafe { clang_Type_getNumTemplateArguments(self.x) };
         let f = move |i| {
@@ -817,7 +817,7 @@ impl Comment {
 
     /// Get this comment's children comment
     pub fn get_children<'a>(&'a self)
-                            -> Box<ExactSizeIterator<Item = Comment> + 'a> {
+                            -> impl ExactSizeIterator<Item = Comment> + 'a {
         let f_len = move || unsafe { clang_Comment_getNumChildren(self.x) };
         let f = move |i| {
             Comment {
@@ -837,7 +837,7 @@ impl Comment {
     /// Given that this comment is an HTML start tag, get its attributes.
     pub fn get_tag_attrs<'a>
         (&'a self)
-         -> Box<ExactSizeIterator<Item = CommentAttribute> + 'a> {
+         -> impl ExactSizeIterator<Item = CommentAttribute> + 'a {
         let f_len = move || unsafe { clang_HTMLStartTag_getNumAttrs(self.x) };
         let f = move |i| {
             CommentAttribute {
@@ -1286,7 +1286,7 @@ impl Drop for EvalResult {
 fn ffi_call_index_iterator<'a, FLen, F, T>
     (f_len: FLen,
      f: F)
-     -> Box<ExactSizeIterator<Item = T> + 'a>
+     -> impl ExactSizeIterator<Item = T> + 'a
     where FLen: Fn() -> c_uint + 'a,
           F: Fn(c_uint) -> T + 'a,
 {
@@ -1300,13 +1300,13 @@ fn ffi_call_index_iterator<'a, FLen, F, T>
 fn ffi_call_index_iterator_check_positive<'a, FLen, F, T>
     (f_len: FLen,
      f: F)
-     -> Option<Box<ExactSizeIterator<Item = T> + 'a>>
+     -> Option<impl ExactSizeIterator<Item = T> + 'a>
     where FLen: Fn() -> c_int + 'a,
           F: Fn(c_int) -> T + 'a,
 {
     let len = f_len();
     if len >= 0 {
-        Some(Box::new((0..len).map(f)))
+        Some((0..len).map(f))
     } else {
         assert_eq!(len, -1); // only expect -1 as invalid
         None
